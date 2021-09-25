@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>DoggoHub</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
+
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container-fluid">
+			<a href="./index.html" class="logo navbar-brand">
+				<span>Doggo</span>
+				<span>Hub</span>
+			</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+				aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0 h5">
+					<li class="nav-item">
+						<a class="nav-link" href="./index.html">Home</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="./searchByBreeds.html">Search By Breeds</a>
+					</li>
+				</ul>
+			</div>
+			<div class="input-group w-auto mt-2">
+				<span class="input-group-text">Select Breed</span>
+				<select class="form-select" id="breed-list"></select>
+			</div>
+		</div>
+	</nav>
+	<div class="container-fluid" id="content-container"></div>
+	<script>
+
+		function makeAndRenderDoggoDiv(doggoObj) {
+			$("#content-container").html(
+				`<div class="card shadow">
+					<div class="row g-0">
+						<div class="col-md-6 p-5">
+							<img src=${doggoObj.imgUrl} class="img-fluid rounded-start shadow-lg" alt=${doggoObj.name} />
+						</div>
+						<div class="col-md-6 p-5">
+							<div class="card-body" >
+									<h3 class="card-title mb-3">${doggoObj.name}</h3>
+									<p>Features : <span class="text-muted"> ${doggoObj.features} </span></p>
+									<p>Bred For : <span class="text-muted"> ${doggoObj.bredFor}</span></p>
+									<p>Bred Group : <span class="text-muted"> ${doggoObj.breedGroup}</span></p>
+									<p>Life Span : <span class="text-muted"> ${doggoObj.lifeSpan}</span></p>
+									<p>Weight : <span class="text-muted"> ${doggoObj.weight} Kg </span></p>
+									<p>Height : <span class="text-muted"> ${doggoObj.height} Cm</span></p>
+							</div>
+						</div>
+				</div>
+			</div>`
+			)
+		}
+
+		let breedsData = [];
+
+		function makeDoggoBreedOptions() {
+			const doggoBreedsOptions = breedsData.map(doggoBreed => (`<option value=${doggoBreed.id}>${doggoBreed.name}</option>`))
+			$("#breed-list").html(doggoBreedsOptions.join(""))
+			makeAndRenderDoggoDiv(breedsData[0])
+		}
+
+		$("#breed-list").on("change", function (e) {
+			const doggoObj = breedsData.filter(doggoBreed => doggoBreed.id == e.target.value)[0]
+			makeAndRenderDoggoDiv(doggoObj)
+		})
+
+		function init() {
+			$.ajax({
+				url: `https://api.thedogapi.com/v1/breeds?api_key=87bb3ecf-130c-4c83-8121-5a348902fed5`,
+			})
+				.done(function (data) {
+					data = data.map((doggoBreed) => {
+						return {
+							id: doggoBreed.id,
+							name: doggoBreed.name,
+							bredFor: doggoBreed.bred_for,
+							breedGroup: doggoBreed.breed_group,
+							features: doggoBreed.temperament,
+							imgUrl: doggoBreed.image.url,
+							weight: doggoBreed.weight.metric,
+							height: doggoBreed.height.metric,
+							lifeSpan: doggoBreed.life_span
+						}
+					})
+					breedsData = data;
+					makeDoggoBreedOptions()
+				});
+		}
+		init()
+	</script>
+</body>
+
+</html>
