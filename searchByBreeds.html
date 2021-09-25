@@ -87,6 +87,7 @@
 				url: `https://api.thedogapi.com/v1/breeds?api_key=87bb3ecf-130c-4c83-8121-5a348902fed5`,
 			})
 				.done(function (data) {
+					let max = 0;
 					data = data.map((doggoBreed) => {
 						return {
 							id: doggoBreed.id,
